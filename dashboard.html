@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V35 模拟盘看板 - 20260911</title>
+<style>
+:root {
+  --bg: #0a0e17; --card: #1a2234; --border: #2a3548;
+  --text: #e8ecf4; --text2: #8b95a8; --muted: #5a6478;
+  --up: #00d4aa; --down: #ff6b6b; --accent: #ffc107; --info: #4da6ff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--text); font-size: 14px; padding: 16px; }
+.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+.header h1 { font-size: 20px; }
+.header .date { color: var(--text2); font-size: 13px; }
+.kpi-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:16px; }
+.kpi { background: var(--card); border:1px solid var(--border); border-radius:10px; padding:14px; }
+.kpi .label { color: var(--text2); font-size:12px; margin-bottom:6px; }
+.kpi .value { font-size:22px; font-weight:600; font-family: 'SF Mono','Consolas',monospace; }
+.kpi .sub { font-size:12px; margin-top:4px; }
+.up { color: var(--up); } .down { color: var(--down); } .accent { color: var(--accent); }
+.card { background: var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:16px; }
+.card h2 { font-size:15px; margin-bottom:12px; color: var(--text); }
+#navChart { width:100%; height:280px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th, td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--border); }
+th { color: var(--text2); font-weight:500; font-size:12px; }
+.thermo-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:10px; }
+.thermo-item { text-align:center; padding:10px; background: rgba(255,255,255,0.03); border-radius:8px; }
+.thermo-item .num { font-size:20px; font-weight:600; font-family:'SF Mono',monospace; }
+.thermo-item .lbl { font-size:11px; color: var(--text2); margin-top:4px; }
+.status-badge { display:inline-block; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600; }
+.status-bull { background: rgba(0,212,170,0.15); color: var(--up); }
+.status-bear { background: rgba(255,107,107,0.15); color: var(--down); }
+.footer { text-align:center; color: var(--muted); font-size:11px; margin-top:20px; padding:10px; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { min-width: 480px; }
+/* 移动端适配 */
+@media (max-width: 600px) {
+  body { padding: 10px; font-size: 13px; }
+  .header h1 { font-size: 17px; }
+  .header .date { font-size: 11px; width: 100%; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi { padding: 10px; }
+  .kpi .value { font-size: 18px; }
+  .kpi .label { font-size: 11px; }
+  .kpi .sub { font-size: 11px; }
+  .card { padding: 12px; }
+  .card h2 { font-size: 14px; }
+  #navChart { height: 220px; }
+  .thermo-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .thermo-item { padding: 8px 4px; }
+  .thermo-item .num { font-size: 16px; }
+  .thermo-item .lbl { font-size: 10px; }
+  th, td { padding: 6px 8px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>V35 模拟盘看板</h1>
+  <div class="date">数据日期: 20260911 | 策略: V35 | 生成: 2026-09-11 14:47</div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">总资产</div><div class="value">1,349,966</div><div class="sub">起始 1,349,966</div></div>
+  <div class="kpi"><div class="label">累计收益</div><div class="value down">-0.00%</div><div class="sub">今日 -0.00%</div></div>
+  <div class="kpi"><div class="label">现金</div><div class="value">1,349,966</div><div class="sub">占比 100.0%</div></div>
+  <div class="kpi"><div class="label">持仓市值</div><div class="value">0</div><div class="sub">0 只股票</div></div>
+  <div class="kpi"><div class="label">上证指数</div><div class="value">3951.51</div><div class="sub">距MA200 -1.45%</div></div>
+  <div class="kpi"><div class="label">V35 状态</div><div class="value" style="font-size:16px;"><span class="status-badge status-bear">bear(空仓)</span></div><div class="sub">距调仓 13 交易日</div></div>
+</div>
+
+<div class="card">
+  <h2>净值曲线（最近60交易日，归一化）</h2>
+  <div id="navChart"></div>
+</div>
+
+<div class="card">
+  <h2>当前持仓</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>代码</th><th>名称</th><th>现价</th><th>持仓</th><th>市值</th><th>盈亏</th></tr>
+    <tr><td colspan="6" style="text-align:center;color:#5a6478;padding:20px;">当前空仓（等待9/30季末调仓）</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>市场温度计</h2>
+  <div class="thermo-grid">
+    <div class="thermo-item"><div class="num up">922</div><div class="lbl">上涨家数</div></div>
+    <div class="thermo-item"><div class="num down">4182</div><div class="lbl">下跌家数</div></div>
+    <div class="thermo-item"><div class="num accent">52</div><div class="lbl">涨停</div></div>
+    <div class="thermo-item"><div class="num" style="color:var(--info)">19</div><div class="lbl">跌停</div></div>
+    <div class="thermo-item"><div class="num">16470亿</div><div class="lbl">成交额</div></div>
+    <div class="thermo-item"><div class="num">0.797%</div><div class="lbl">20日波动</div></div>
+    <div class="thermo-item"><div class="num">1.057%</div><div class="lbl">波动阈值</div></div>
+    <div class="thermo-item"><div class="num">4010</div><div class="lbl">MA200</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  V35 策略: MA200牛熊择时 + 波动率过滤 + 季频调仓 + 行业分层50只等权 | 模拟盘不构成投资建议
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function() {
+  var chart = echarts.init(document.getElementById('navChart'));
+  chart.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', confine: true,
+      formatter: function(params) { return params[0].axisValue + '<br/>净值: ' + params[0].value.toFixed(4); } },
+    grid: { left: 50, right: 20, top: 20, bottom: 30 },
+    xAxis: { type: 'category', data: ['20260622', '20260623', '20260624', '20260625', '20260626', '20260629', '20260630', '20260701', '20260702', '20260703', '20260706', '20260707', '20260708', '20260709', '20260710', '20260713', '20260714', '20260715', '20260716', '20260717', '20260720', '20260721', '20260722', '20260723', '20260724', '20260727', '20260728', '20260729', '20260730', '20260731', '20260803', '20260804', '20260805', '20260806', '20260807', '20260810', '20260811', '20260812', '20260813', '20260814', '20260817', '20260818', '20260819', '20260820', '20260821', '20260824', '20260825', '20260826', '20260827', '20260828', '20260831', '20260901', '20260902', '20260903', '20260904', '20260907', '20260908', '20260909', '20260910', '20260911'], axisLabel: { color: '#8b95a8', fontSize: 10 }, axisLine: { lineStyle: { color: '#2a3548' } } },
+    yAxis: { type: 'value', scale: true, axisLabel: { color: '#8b95a8', fontSize: 10 }, splitLine: { lineStyle: { color: '#1a2234' } } },
+    series: [{ type: 'line', data: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], smooth: true, symbol: 'none',
+      lineStyle: { color: '#ffc107', width: 2 },
+      areaStyle: { color: { type: 'linear', x:0, y:0, x2:0, y2:1,
+        colorStops: [{offset:0, color:'rgba(255,193,7,0.3)'}, {offset:1, color:'rgba(255,193,7,0)'}] } } }]
+  });
+  window.addEventListener('resize', function() { chart.resize(); });
+})();
+</script>
+</body>
+</html>
