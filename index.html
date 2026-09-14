@@ -86,8 +86,7 @@ function showTab(name){
         areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(255,193,7,0.3)'},{offset:1,color:'rgba(255,193,7,0)'}]}}}]
     });
   }
-  var now=new Date(),hm=now.getHours()*60+now.getMinutes();
-  showTab(hm>=555&&hm<=900?'intra':'hold');
+  showTab('hold'); // ADR-090: 默认直接进持仓净值, 第一眼就是自己的持仓与实时盈亏; 想看盯盘点盘中盯盘标签
 })();
 </script>
 <script>
